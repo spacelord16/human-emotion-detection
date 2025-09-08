@@ -92,7 +92,6 @@ logs/
 
 # Checkpoints and model outputs
 checkpoints/
-outputs/
 runs/
 wandb/
 

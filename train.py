@@ -6,6 +6,7 @@ import copy
 from config import DEVICE, NUM_EPOCHS, LEARNING_RATE, MODEL_PATH
 from model import build_model
 from data_loader import get_data_loaders
+from visualize import generate_all_plots
 
 
 def train_model():
@@ -23,6 +24,12 @@ def train_model():
     since = time.time()
     best_model_wts = copy.deepcopy(model.state_dict())
     best_acc = 0.0
+
+    # Track metrics for visualization
+    train_losses = []
+    val_losses = []
+    train_accs = []
+    val_accs = []
 
     for epoch in range(NUM_EPOCHS):
         print(f"Epoch {epoch+1}/{NUM_EPOCHS}")
@@ -62,6 +69,14 @@ def train_model():
 
             print(f"{phase} Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f}")
 
+            # Store metrics for visualization
+            if phase == "train":
+                train_losses.append(epoch_loss)
+                train_accs.append(epoch_acc.item())
+            else:
+                val_losses.append(epoch_loss)
+                val_accs.append(epoch_acc.item())
+
             if phase == "validation" and epoch_acc > best_acc:
                 best_acc = epoch_acc
                 best_model_wts = copy.deepcopy(model.state_dict())
@@ -71,6 +86,20 @@ def train_model():
     time_elapsed = time.time() - since
     print(f"Training complete in {time_elapsed // 60:.0f}m {time_elapsed % 60:.0f}s")
     print(f"Best val Acc: {best_acc:4f}")
+
+    # Generate visualizations
+    output_dir = generate_all_plots(
+        train_losses,
+        val_losses,
+        train_accs,
+        val_accs,
+        dataset_sizes,
+        class_names,
+        best_acc.item(),
+        time_elapsed,
+    )
+
+    return model, output_dir
 
 
 if __name__ == "__main__":
