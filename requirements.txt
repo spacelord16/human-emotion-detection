@@ -8,3 +8,5 @@ seaborn
 matplotlib
 streamlit
 Pillow
+opencv-python
+streamlit-webrtc
